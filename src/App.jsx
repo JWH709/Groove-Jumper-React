@@ -4,34 +4,41 @@ import ListGroup from "react-bootstrap/ListGroup";
 import "bootstrap/dist/css/bootstrap.min.css";
 import React from "react";
 import albumPools from "./assets/AlbumPools";
+import apiInfo from "./assets/ApiInfo";
 
 const App = () => {
   const startingAlbumReference = albumPools[0][0][1];
 
   const [startingAlbum, setStartingAlbum] = React.useState();
 
+  const [loaded, setLoaded] = React.useState(false);
+
   React.useEffect(() => {
     const fetchPost = async () => {
       const response = await fetch(`${startingAlbumReference.url}`);
       const post = await response.json();
       setStartingAlbum(post);
+      setLoaded(true);
+      console.log(startingAlbum);
     };
 
     fetchPost();
-  });
+  }, []);
 
-  console.log(startingAlbum); //for checking what properties I'm using
-
-  return (
-    <>
-      <InfoTab />
-      <GameTab
-        title={startingAlbum.title}
-        cover={startingAlbumReference.albumCover}
-        albumArtist={startingAlbum.artists[0].name}
-      />
-    </>
-  );
+  if (loaded) {
+    return (
+      <>
+        <InfoTab />
+        <GameTab
+          title={startingAlbum.title}
+          cover={startingAlbumReference.albumCover}
+          albumArtist={startingAlbum.artists[0].name}
+        />
+      </>
+    );
+  } else {
+    return <h1>loading</h1>;
+  }
 };
 
 const InfoTab = () => {};
