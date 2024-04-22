@@ -5,6 +5,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import React from "react";
 import albumPools from "./assets/AlbumPools";
 import apiInfo from "./assets/ApiInfo";
+import search from "./assets/images/search.png";
 
 const App = () => {
   const startingAlbumReference = albumPools[0][0][1];
@@ -78,14 +79,61 @@ const GameCard = ({ cardTitle, cardCover, cardAlbumArtist }) => {
 };
 
 const GameSearch = () => {
+  const [searchResults, setSearchResults] = React.useState();
+  const [artistSearch, setArtistSearch] = React.useState();
+  const [albumSearch, setAlbumSearch] = React.useState();
+
+  const handleArtistChange = (event) => {
+    setArtistSearch("artist=" + event.target.value + "&");
+  };
+  const handleAlbumChange = (event) => {
+    setAlbumSearch("release_title" + event.target.value + "&");
+  };
+
   return (
     <>
       <h4>Search For an Album</h4>
       <div>
-        <input type="text" id="search-input-artist" placeholder="Artist" />
-        <input type="text" id="search-input-album" placeholder="Album" />
+        <input
+          type="text"
+          id="search-input-artist"
+          placeholder="Artist"
+          onChange={handleArtistChange}
+        />
+        <input
+          type="text"
+          id="search-input-album"
+          placeholder="Album"
+          onChange={handleAlbumChange}
+        />
         <button>
-          <img src="" alt="a magnifying glass" id="search-image" />
+          <img
+            src={search}
+            alt="a magnifying glass"
+            id="search-image"
+            onClick={React.useEffect(() => {
+              const fetchResults = async () => {
+                const response = await fetch(
+                  `${
+                    apiInfo.searchPrefix +
+                    apiInfo.searchFormatAlbum +
+                    artistSearch +
+                    apiInfo.searchSuffix
+                  }`
+                );
+                const albums = await response.json();
+                setSearchResults(albums);
+                console.log(
+                  apiInfo.searchPrefix +
+                    apiInfo.searchFormatAlbum +
+                    artistSearch +
+                    apiInfo.searchSuffix
+                );
+                console.log(searchResults);
+              };
+              fetchResults();
+            }, [])}
+          />
         </button>
       </div>
       <div>
